@@ -1,0 +1,20 @@
+def verify_otp_while(correct, entries):
+    it = iter(entries)          # entries simulate keypad input
+    attempts = 0
+    while attempts < 3:
+        try:
+            code = next(it).strip()
+        except StopIteration:
+            return 'ABANDONED'
+        if code == '':
+            continue            # blank: skip, attempt NOT consumed
+        attempts += 1
+        if code == correct:
+            return 'VERIFIED'   # leaves the function (acts like break)
+    else:
+        # runs only when the loop ended by the condition, not by break
+        return 'LOCKED for 30 minutes'
+
+
+print(verify_otp_while('4821', ['', '1111', '  ', '2222', '4821']))  # VERIFIED (2 real attempts used... see note)
+print(verify_otp_while('4821', ['1', '2', '3', '4821']))             # LOCKED for 30 minutes
