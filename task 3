@@ -1,0 +1,33 @@
+import time
+
+def line(i):
+    return f'SMS {i:06d} | 9876543210 | Rs 0.25\n'   # fixed length L = 38 characters
+
+def build_plus(n):
+    out = ''
+    for i in range(n):
+        out += line(i)          # may copy the whole string each time
+    return out
+
+def build_join(n):
+    parts = []
+    for i in range(n):
+        parts.append(line(i))   # O(1) amortised
+    return ''.join(parts)       # one pass, one allocation
+
+def build_fstring(n):
+    out = ''
+    for i in range(n):
+        out = f'{out}{line(i)}'  # f-string still creates a new string every time
+    return out
+
+def timeit(fn, n):
+    t0 = time.perf_counter()
+    fn(n)
+    return time.perf_counter() - t0
+
+for n in (1_000, 10_000, 200_000):
+    for fn in (build_plus, build_join, build_fstring):
+        if fn is build_fstring and n == 200_000:
+            continue            # skip: too slow, see table
+        print(n, fn.__name__, f'{timeit(fn, n):.4f} s')
