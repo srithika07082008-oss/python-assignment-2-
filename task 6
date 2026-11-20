@@ -1,0 +1,41 @@
+import sys
+import time
+from functools import lru_cache
+
+calls = 0
+
+def ways_naive(n):
+    global calls
+    calls += 1
+    if n <= 1:
+        return 1
+    return ways_naive(n - 1) + ways_naive(n - 2)
+
+@lru_cache(maxsize=None)
+def ways_memo(n):
+    if n <= 1:
+        return 1
+    return ways_memo(n - 1) + ways_memo(n - 2)
+
+def ways_iter(n):
+    prev, cur = 1, 1          # ways(0), ways(1)
+    for _ in range(n - 1):
+        prev, cur = cur, prev + cur
+    return cur if n >= 1 else 1
+
+for n in (10, 20, 25, 30):
+    calls = 0
+    t0 = time.perf_counter()
+    result = ways_naive(n)
+    dt = time.perf_counter() - t0
+    ways_memo.cache_clear()
+    ways_memo(n)
+    print(n, result, calls, f'{dt:.4f}s', ways_memo.cache_info().misses, ways_iter(n))
+
+print(sys.getrecursionlimit())          # 1000 by default
+try:
+    ways_memo.cache_clear()
+    print(ways_memo(1000))
+except RecursionError as e:
+    print('RecursionError:', e)
+print(ways_iter(1000))                  # works: 209-digit number
