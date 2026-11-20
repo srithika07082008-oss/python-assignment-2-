@@ -1,0 +1,30 @@
+import time
+from functools import lru_cache
+
+calls = 0
+def ways_naive(n):
+    global calls
+    calls += 1
+    return 1 if n <= 1 else ways_naive(n - 1) + ways_naive(n - 2)
+
+def ways_fast(n):
+    prev, cur = 1, 1
+    for _ in range(n - 1):
+        prev, cur = cur, prev + cur
+    return cur if n >= 1 else 1
+
+# 1. Correctness: identical results for n = 0..30
+assert all(ways_naive(n) == ways_fast(n) for n in range(31))
+print('Results identical for n = 0..30')
+
+# 2. Comparable experiment
+print('n | naive calls | naive s | fast steps | fast s')
+for n in (10, 20, 25, 30):
+    calls = 0
+    t0 = time.perf_counter(); ways_naive(n); t_naive = time.perf_counter() - t0
+    t0 = time.perf_counter(); ways_fast(n);  t_fast = time.perf_counter() - t0
+    print(n, calls, f'{t_naive:.6f}', n - 1, f'{t_fast:.8f}')
+
+# 3. Depth objective
+print(len(str(ways_fast(1000))), 'digits, no RecursionError')
+
