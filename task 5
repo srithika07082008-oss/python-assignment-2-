@@ -1,0 +1,7 @@
+def add_item(item, order=[]):        # BUGGY
+    order.append(item)
+    return order
+
+print(add_item('Dosa'))      # ['Dosa']
+print(add_item('Idli'))      # ['Dosa', 'Idli']   <- should be ['Idli']
+print(add_item.__defaults__) # (['Dosa', 'Idli'],)
